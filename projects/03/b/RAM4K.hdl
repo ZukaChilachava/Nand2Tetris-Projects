@@ -1,0 +1,34 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/03/b/RAM4K.hdl
+
+/**
+ * Memory of 4K registers, each 16 bit-wide. Out holds the value
+ * stored at the memory location specified by address. If load==1, then 
+ * the in value is loaded into the memory location specified by address 
+ * (the loaded value will be emitted to out from the next time step onward).
+ */
+
+CHIP RAM4K {
+    IN in[16], load, address[12];
+    OUT out[16];
+
+    PARTS:
+    And16(a[0..11]=address, a[6..15]=false, b[0..15]=true, out[0..2]=first3, out[3..11]=scnd3);
+
+    DMux8Way(in=load, sel=first3, a=ram1, b=ram2, c=ram3, d=ram4, e=ram5, f=ram6, g=ram7, h=ram512);
+
+    RAM512(in=in, load=ram1, address=scnd3, out=curr1);
+    RAM512(in=in, load=ram2, address=scnd3, out=curr2);
+    RAM512(in=in, load=ram3, address=scnd3, out=curr3);
+    RAM512(in=in, load=ram4, address=scnd3, out=curr4);
+
+    RAM512(in=in, load=ram5, address=scnd3, out=curr5);
+    RAM512(in=in, load=ram6, address=scnd3, out=curr6);
+    RAM512(in=in, load=ram7, address=scnd3, out=curr7);
+    RAM512(in=in, load=ram512, address=scnd3, out=curr8);
+
+    Mux8Way16(a=curr1, b=curr2, c=curr3, d=curr4, e=curr5, f=curr6, g=curr7, h=curr8, sel=first3, out=out);
+
+}
