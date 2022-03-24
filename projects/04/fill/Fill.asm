@@ -11,4 +11,67 @@
 // "white" in every pixel;
 // the screen should remain fully clear as long as no key is pressed.
 
-// Put your code here.
+@8192
+D=A
+
+@screensize
+M=D
+
+//current screen color
+@color
+M=0
+
+(OUTERLOOP)
+    //starting position of screen pixels
+    @SCREEN
+    D=A
+    @currpos
+    M=D
+
+    //if keyPressed! don't change screen color to black
+    @KBD
+    D=M
+    @PAINTLOOP
+    D;JEQ
+
+    //change screen color to black
+    @color
+    M=-1
+
+        (PAINTLOOP)
+            @color
+            D=M
+
+            //set color of 16 pixels
+            @currpos
+            A=M
+            M=D
+
+            //go to next 16 pixels for the next iteration
+            @currpos
+            M=M + 1
+
+            @SCREEN
+            D=A
+
+            @screensize
+            D=D + M
+
+            //if RAM[currpos] == 0 screen ended
+            @currpos
+            D=D - M
+
+            //if screen ended get out of the loop
+            @RESETCOLOR
+            D;JEQ
+
+            //keep painting
+            @PAINTLOOP
+            0;JMP
+    
+    (RESETCOLOR)
+    @color
+    M=0
+
+    @OUTERLOOP
+    0;JMP

@@ -9,4 +9,35 @@
 // This program only needs to handle arguments that satisfy
 // R0 >= 0, R1 >= 0, and R0*R1 < 32768.
 
-// Put your code here.
+//initialize loop counter and sum register
+    @i
+    M=0
+    @R2
+    M=0
+
+(LOOP)
+    //if RAM[1] - i == 0 end loop
+    @R1
+    D=M
+    @i
+    D=D - M
+
+    @STOP
+    D;JEQ
+
+    //increment sum
+    @R0
+    D=M
+    @R2
+    M=M + D
+
+    //increment i
+    @i
+    M=M + 1
+
+    @LOOP
+    0;JMP
+
+(STOP)
+    @STOP
+    0;JMP
