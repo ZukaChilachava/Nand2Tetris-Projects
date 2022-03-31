@@ -9,6 +9,25 @@
 // This program only needs to handle arguments that satisfy
 // R0 >= 0, R1 >= 0, and R0*R1 < 32768.
 
+// Pseudocode
+//-----------------------------------
+// int a = firstNumber
+// int b = secondNumber
+
+// int i = 0
+// int sum = 0
+
+// LOOP:
+//     if(b - i == 0) goto STOP
+//
+//     sum += a
+//     i++
+//     goto LOOP
+
+// STOP:
+//     goto STOP
+//-----------------------------------
+
 //initialize loop counter and sum register
 @i
 M=0

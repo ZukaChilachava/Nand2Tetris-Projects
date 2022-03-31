@@ -11,17 +11,37 @@
 // "white" in every pixel;
 // the screen should remain fully clear as long as no key is pressed.
 
+// Pseudocode
+//---------------------------------------------------
+// screensize = 8192
+
+// OUTERLOOP:
+//     color = 0
+//     currentPos = SCREEN
+//     if(!keyPressed) goto PAINTLOOP
+//     else color = 1
+
+//     PAINTLOOP:
+//         RAM[currentPos] = color
+//         currentPos++
+//         int k = SCREEN + screenSize - currentPos
+//         if(k == 0) goto OUTERLOOP
+//         else goto PAINTLOOP
+
+// goto OUTERLOOP
+//---------------------------------------------------
+
 @8192
 D=A
 
 @screensize
 M=D
 
-//current screen color
-@color
-M=0
-
 (OUTERLOOP)
+    //current screen color
+    @color
+    M=0
+
     //starting position of screen pixels
     @SCREEN
     D=A
@@ -54,6 +74,7 @@ M=0
             @SCREEN
             D=A
 
+            //D = last index of screen
             @screensize
             D=D + M
 
@@ -62,16 +83,13 @@ M=0
             D=D - M
 
             //if screen ended get out of the loop
-            @RESETCOLOR
+            @OUTERLOOP
             D;JEQ
 
             //keep painting
             @PAINTLOOP
             0;JMP
     
-    (RESETCOLOR)
-    @color
-    M=0
 
     @OUTERLOOP
     0;JMP
