@@ -39,5 +39,40 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-    // Put your code here:
+    
+    Mux16(a=registerA, b=inM, sel=instruction[12], out=AorM);
+    ALU(x=registerD, y=AorM, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6], out=res, zr=zr, ng=ng);
+    Mux16(a=instruction, b=res, sel=instruction[15], out=currALU, out=outM);
+
+    Mux(a=true, b=instruction[5], sel=instruction[15], out=registerALoad);
+    Mux16(a=instruction, b=currALU, sel=instruction[15], out=cmdType);
+    ARegister(in=cmdType, load=registerALoad, out=registerA, out[0..14]=addressM);
+
+    Mux(a=false, b=instruction[4], sel=instruction[15], out=registerDLoad);
+    DRegister(in=currALU, load=registerDLoad, out=registerD);
+
+    Mux(a=false, b=instruction[3], sel=instruction[15], out=writeM);
+
+    And(a=zr, b=instruction[1], out=isSame);
+    Not(in=zr, out=notZR);
+    Not(in=instruction[1], out=notZero);
+    And(a=notZR, b=notZero, out=NE);
+    And(a=NE, b=instruction[0], out=NE1);
+    And(a=NE1, b=instruction[1], out=NE2);
+    Not(in=ng, out=notNG);
+    And(a=notZR, b=notNG, out=notZRNG);
+    And(a=instruction[0], b=notZRNG, out=isGreater);
+    And(a=instruction[2], b=ng, out=isLess);
+    Or(a=instruction[2], b=instruction[1], out=noJump1);
+    Or(a=noJump1, b=instruction[0], out=noJump2);
+    And(a=instruction[2], b=instruction[1], out=uncJump1);
+    And(a=uncJump1, b=instruction[0], out=uncJump2);
+    Or(a=isSame, b=isGreater, out=combAns);
+    Or(a=combAns, b=NE2, out=combAns1);
+    Or(a=combAns1, b=isLess, out=jumpAns1);
+    And(a=jumpAns1, b=noJump2, out=jumpAns2);
+    Or(a=jumpAns2, b=uncJump2, out=jumpAns3);
+    And(a=instruction[15], b=jumpAns3, out=jumpAns4);
+
+    PC(in=registerA, load=jumpAns4, inc=true, reset=reset, out[0..14]=pc);
 }
